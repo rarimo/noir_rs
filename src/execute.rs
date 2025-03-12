@@ -1,7 +1,7 @@
 use acir::{native_types::{WitnessMap, WitnessStack}, FieldElement};
 use bn254_blackbox_solver::Bn254BlackBoxSolver;
 use nargo::ops::execute_program;
-use nargo::foreign_calls::default::DefaultForeignCallExecutor;
+use nargo::foreign_calls::DefaultForeignCallExecutor;
 
 use crate::circuit::get_program;
 
