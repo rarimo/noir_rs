@@ -1,12 +1,15 @@
-use acir::{native_types::WitnessMap, FieldElement};
-use bb_rs::barretenberg_api::acir::{acir_create_proof, acir_get_honk_verification_key, acir_get_verification_key, acir_prove_ultra_honk, get_circuit_sizes, new_acir_composer};
-use std::ptr;
-use bb_rs::barretenberg_api::common::example_simple_create_and_verify_proof;
-use bb_rs::barretenberg_api::srs::init_srs;
 use crate::barretenberg::srs::netsrs::NetSrs;
 use crate::circuit::get_acir_buffer_uncompressed;
 use crate::execute::execute;
 use crate::witness::serialize_witness;
+use acir::{native_types::WitnessMap, FieldElement};
+use bb_rs::barretenberg_api::acir::{
+    acir_create_proof, acir_get_honk_verification_key, acir_get_verification_key,
+    acir_prove_ultra_honk, get_circuit_sizes, new_acir_composer,
+};
+use bb_rs::barretenberg_api::common::example_simple_create_and_verify_proof;
+use bb_rs::barretenberg_api::srs::init_srs;
+use std::ptr;
 
 /// Generate an Ultra Honk proof for the given circuit bytecode and initial witness
 /// Will execute the circuit to make sure it is solved
@@ -50,15 +53,9 @@ pub fn prove_ultra_plonk(
     let serialized_solved_witness = serialize_witness(witness_stack)?;
     let acir_buffer_uncompressed = get_acir_buffer_uncompressed(circuit_bytecode)?;
 
+    let circuit_size = unsafe { get_circuit_sizes(&acir_buffer_uncompressed, recursive) };
 
-    let circuit_size = unsafe {
-        get_circuit_sizes(&acir_buffer_uncompressed, recursive)
-    };
-
-
-    let mut composer = unsafe{
-        new_acir_composer(circuit_size.total)
-    };
+    let mut composer = unsafe { new_acir_composer(circuit_size.total) };
 
     Ok(unsafe {
         let result = (
@@ -74,3 +71,11 @@ pub fn prove_ultra_plonk(
     })
 }
 
+pub fn get_verification(circuit_bytecode: &str) -> Result<Vec<u8>, String> {
+    let acir_buffer_uncompressed = get_acir_buffer_uncompressed(circuit_bytecode)?;
+    let circuit_size = unsafe { get_circuit_sizes(&acir_buffer_uncompressed, false) };
+
+    let mut composer = unsafe { new_acir_composer(circuit_size.total) };
+
+    Ok(unsafe { acir_get_verification_key(&mut composer) })
+}
