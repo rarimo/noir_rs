@@ -5,7 +5,7 @@ use crate::witness::serialize_witness;
 use acir::{native_types::WitnessMap, FieldElement};
 use bb_rs::barretenberg_api::acir::{
     acir_create_proof, acir_get_honk_verification_key, acir_get_verification_key,
-    acir_prove_ultra_honk, get_circuit_sizes, new_acir_composer,
+    acir_init_proving_key, acir_prove_ultra_honk, get_circuit_sizes, new_acir_composer,
 };
 use bb_rs::barretenberg_api::common::example_simple_create_and_verify_proof;
 use bb_rs::barretenberg_api::srs::init_srs;
@@ -76,6 +76,8 @@ pub fn get_verification(circuit_bytecode: &str) -> Result<Vec<u8>, String> {
     let circuit_size = unsafe { get_circuit_sizes(&acir_buffer_uncompressed, false) };
 
     let mut composer = unsafe { new_acir_composer(circuit_size.total) };
+
+    unsafe { acir_init_proving_key(&mut composer, &acir_buffer_uncompressed) };
 
     Ok(unsafe { acir_get_verification_key(&mut composer) })
 }
