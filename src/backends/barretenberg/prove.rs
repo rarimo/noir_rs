@@ -77,7 +77,7 @@ pub fn get_verification(circuit_bytecode: &str) -> Result<Vec<u8>, String> {
 
     let mut composer = unsafe { new_acir_composer(circuit_size.total) };
 
-    unsafe { acir_init_proving_key(&mut composer, &acir_buffer_uncompressed) };
+    unsafe { acir_init_proving_key(&mut composer, &acir_buffer_uncompressed, false) };
 
     Ok(unsafe { acir_get_verification_key(&mut composer) })
 }
