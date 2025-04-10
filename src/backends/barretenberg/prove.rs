@@ -57,7 +57,7 @@ pub fn prove_ultra_plonk(
 
     let mut composer = unsafe { new_acir_composer(circuit_size.total) };
 
-    Ok(unsafe {
+    let result_data = unsafe {
         let result = (
             acir_create_proof(
                 &mut composer,
@@ -68,7 +68,11 @@ pub fn prove_ultra_plonk(
             acir_get_verification_key(&mut composer),
         );
         result
-    })
+    };
+
+    unsafe { delete_acir_composer(composer) };
+
+    return result_data;
 }
 
 pub fn get_verification(circuit_bytecode: &str) -> Result<Vec<u8>, String> {
