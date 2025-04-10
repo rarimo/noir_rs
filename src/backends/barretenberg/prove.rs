@@ -5,7 +5,8 @@ use crate::witness::serialize_witness;
 use acir::{native_types::WitnessMap, FieldElement};
 use bb_rs::barretenberg_api::acir::{
     acir_create_proof, acir_get_honk_verification_key, acir_get_verification_key,
-    acir_init_proving_key, acir_prove_ultra_honk, get_circuit_sizes, new_acir_composer,
+    acir_init_proving_key, acir_prove_ultra_honk, delete_acir_composer, get_circuit_sizes,
+    new_acir_composer,
 };
 use bb_rs::barretenberg_api::common::example_simple_create_and_verify_proof;
 use bb_rs::barretenberg_api::srs::init_srs;
@@ -72,7 +73,7 @@ pub fn prove_ultra_plonk(
 
     unsafe { delete_acir_composer(composer) };
 
-    return result_data;
+    return Ok(result_data);
 }
 
 pub fn get_verification(circuit_bytecode: &str) -> Result<Vec<u8>, String> {
